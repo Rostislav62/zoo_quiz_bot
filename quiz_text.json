@@ -1,42 +1,452 @@
 {
-  "animals": {
-    "questions": "{name}, что тебе больше понравилось бы?",
-    "options": [
-      "Обрадоваться спрятанным ранее вкусняшкам как енотик Света.",
-      "Выгнуть спинку и неслышно ходить по дому, как настоящий ягуарунди.",
-      "Поиграть в мяч, как пингвины Гумбольдта."
-    ]
+  "Млекопитающие": {
+    "АЗИАТСКИЙ СЛОН": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/aziatskiy_slon",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/5c716198-b8c0-4f4e-b831-728f39a79009.jpeg",
+      "answers": [
+        "Наестся бананов как АЗИАТСКИЙ СЛОН.",
+        "Любить купаться в грязи как АЗИАТСКИЙ СЛОН.",
+        "Нести детеныша на хоботе как АЗИАТСКИЙ СЛОН."
+      ],
+      "category_id": 1,
+      "animal_id": 1
+    },
+    "АМУРСКИЙ ТИГР": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/amurskiy_tigr",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/6e21c072-0b90-4ef9-b429-5b6dcbff6c7b.jpeg",
+      "answers": [
+        "Бегать по снегу как АМУРСКИЙ ТИГР.",
+        "Охотиться на рыбу в холодной воде как АМУРСКИЙ ТИГР.",
+        "Прятаться в высокой траве как АМУРСКИЙ ТИГР."
+      ],
+      "category_id": 1,
+      "animal_id": 2
+    },
+    "БЕЛЫЙ МЕДВЕДЬ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/belyy_medved",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/fd6a0e97-8424-4b09-8b54-8c3e3ef69361.jpeg",
+      "answers": [
+        "Спать на льду как БЕЛЫЙ МЕДВЕДЬ.",
+        "Ходить по льду как БЕЛЫЙ МЕДВЕДЬ.",
+        "Играть с медвежатами на берегу как БЕЛЫЙ МЕДВЕДЬ."
+      ],
+      "category_id": 1,
+      "animal_id": 3
+    },
+    "ВОСТОЧНО-СИБИРСКАЯ РЫСЬ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/vostochno-sibirskaya-rysa",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/5a1458c5-8a8b-4b2b-a59b-d1071d8c7a9c.jpeg",
+      "answers": [
+        "Охотиться на зайцев как ВОСТОЧНО-СИБИРСКАЯ РЫСЬ.",
+        "Прыгать на добычу из засады как ВОСТОЧНО-СИБИРСКАЯ РЫСЬ.",
+        "Украшать свой улей цветами как ВОСТОЧНО-СИБИРСКАЯ РЫСЬ."
+      ],
+      "category_id": 1,
+      "animal_id": 4
+    },
+    "ДАГЕСТАНСКИЙ ТУР": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/dagestanskiy-tur",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/0a54da13-010f-4c28-aae8-97a4b21d2e74.jpeg",
+      "answers": [
+        "Взбираться на скалы как ДАГЕСТАНСКИЙ ТУР.",
+        "Спать на крутых склонах как ДАГЕСТАНСКИЙ ТУР.",
+        "Пугать туристов своими рогами как ДАГЕСТАНСКИЙ ТУР."
+      ],
+      "category_id": 1,
+      "animal_id": 5
+    },
+    "ИНДИЙСКИЙ ЛЕВ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/indiyskiy-lev",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/8f122f5c-7463-42b7-980f-bb5f7f05646a.jpeg",
+      "answers": [
+        "Реветь на рассвете как ИНДИЙСКИЙ ЛЕВ.",
+        "Охранять стаю львят как ИНДИЙСКИЙ ЛЕВ.",
+        "Спать на солнце в царстве мангустов как ИНДИЙСКИЙ ЛЕВ."
+      ],
+      "category_id": 1,
+      "animal_id": 6
+    },
+    "МАЛАЯ ПАНДА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/malaya-panda",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/0c83d9a1-20d2-418a-9c0c-9efc149f7c4e.jpeg",
+      "answers": [
+        "Лазить по деревьям как МАЛАЯ ПАНДА.",
+        "Жевать бамбук в тени как МАЛАЯ ПАНДА.",
+        "Прыгать с ветки на ветку как МАЛАЯ ПАНДА."
+      ],
+      "category_id": 1,
+      "animal_id": 7
+    },
+    "ПУМА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/puma",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/3d63489c-d078-4012-af8a-b6bba5f85726.jpeg",
+      "answers": [
+        "Прятаться в тени как ПУМА.",
+        "Охотиться на кроликов как ПУМА.",
+        "Спать на скале как ПУМА."
+      ],
+      "category_id": 1,
+      "animal_id": 8
+    },
+    "СЕТЧАТЫЙ ЖИРАФ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/setchatyy-giraf",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/48a49f8e-91e7-46b1-8e82-df568f2a5f80.jpeg",
+      "answers": [
+        "Высматривать с дерева как СЕТЧАТЫЙ ЖИРАФ.",
+        "Пить воду из высокого источника как СЕТЧАТЫЙ ЖИРАФ.",
+        "Гулять по саванне как СЕТЧАТЫЙ ЖИРАФ."
+      ],
+      "category_id": 1,
+      "animal_id": 9
+    },
+    "УССУРИЙСКИЙ БЕЛОГРУДЫЙ МЕДВЕДЬ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/ussuriyskiy-belogrudyy-medved",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/3b54e7d3-7ac0-4d58-ae6e-2e8e9e5f2c77.jpeg",
+      "answers": [
+        "Купаться в реке как УССУРИЙСКИЙ БЕЛОГРУДЫЙ МЕДВЕДЬ.",
+        "Искать еду на берегу как УССУРИЙСКИЙ БЕЛОГРУДЫЙ МЕДВЕДЬ.",
+        "Играть с медвежатами в высокой траве как УССУРИЙСКИЙ БЕЛОГРУДЫЙ МЕДВЕДЬ."
+      ],
+      "category_id": 1,
+      "animal_id": 10
+    }
   },
-  "birds": {
-    "questions": "{name}, как ты думаешь, какая особенность характерна для птиц?",
-    "options": [
-      "Почистить перышки и отправиться на свидание, как попугаи неразлучники.",
-      "Летать в облаках, как рыжие утки огари, мысленно, конечно.",
-      "Поиграть в мяч, как пингвины Гумбольдта."
-    ]
+  "Птицы": {
+    "АЛЕКСАНДРИЙСКИЙ ПОПУГАЙ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/aleksandriyskiy_popugay",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/69353a1f-35a1-42c7-8e49-fc0b9bbdf966.jpg",
+      "answers": [
+        "Шуметь на рассвете как АЛЕКСАНДРИЙСКИЙ ПОПУГАЙ.",
+        "Петь в тропическом лесу как АЛЕКСАНДРИЙСКИЙ ПОПУГАЙ.",
+        "Кружить в воздухе как АЛЕКСАНДРИЙСКИЙ ПОПУГАЙ."
+      ],
+      "category_id": 2,
+      "animal_id": 1
+    },
+    "БЕЛЫЙ АИСТ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/belyy_aist",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/95ae565a-bcc4-48c5-93f4-ac6b41a9fcc3.jpeg",
+      "answers": [
+        "Летать над полями как БЕЛЫЙ АИСТ.",
+        "Строить гнездо на вершине дерева как БЕЛЫЙ АИСТ.",
+        "Защищать свою территорию как БЕЛЫЙ АИСТ."
+      ],
+      "category_id": 2,
+      "animal_id": 2
+    },
+    "ВЕНЕСУЭЛЬСКИЙ АМАЗОН": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/venesuelskiy_amazon",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/73c6d941-f6e3-47b0-84e3-5184db8ff7b7.jpeg",
+      "answers": [
+        "Петь в тропическом лесу как ВЕНЕСУЭЛЬСКИЙ АМАЗОН.",
+        "Колоть дупла в деревьях как ВЕНЕСУЭЛЬСКИЙ АМАЗОН.",
+        "Перелетать между островами как ВЕНЕСУЭЛЬСКИЙ АМАЗОН."
+      ],
+      "category_id": 2,
+      "animal_id": 3
+    },
+    "ГВИНЕЙСКИЙ ТУРАКО": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/gvineyskiy_turako",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/2b2a045e-8a24-41ec-a964-d1484bc6e5f2.jpeg",
+      "answers": [
+        "Прятаться в густом кустарнике как ГВИНЕЙСКИЙ ТУРАКО.",
+        "Поедать плоды с деревьев как ГВИНЕЙСКИЙ ТУРАКО.",
+        "Кричать на рассвете как ГВИНЕЙСКИЙ ТУРАКО."
+      ],
+      "category_id": 2,
+      "animal_id": 4
+    },
+    "КРАСНЫЙ ФЛАМИНГО": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/krasnyy_flamingo",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/8ca2cadd-ac28-4222-873c-c30b050e8e31.jpeg",
+      "answers": [
+        "Ходить грациозно на одной ноге как КРАСНЫЙ ФЛАМИНГО.",
+        "Парить над водой как КРАСНЫЙ ФЛАМИНГО.",
+        "Собирать материалы для гнезда как КРАСНЫЙ ФЛАМИНГО."
+      ],
+      "category_id": 2,
+      "animal_id": 5
+    },
+    "ОБЫКНОВЕННЫЙ ФАЗАН": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/obyknovennyy_fazan",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/7d46bf28-e2df-4773-bc08-c216730e3800.jpeg",
+      "answers": [
+        "Развевать красивые хвостовые перья как ОБЫКНОВЕННЫЙ ФАЗАН.",
+        "Охранять свою территорию от других самцов как ОБЫКНОВЕННЫЙ ФАЗАН.",
+        "Поедать зерно на полях как ОБЫКНОВЕННЫЙ ФАЗАН."
+      ],
+      "category_id": 2,
+      "animal_id": 6
+    },
+    "СОРОКА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/soroka",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/88f632a3-f3dd-48e9-8d3b-3d02fdf9822b.jpeg",
+      "answers": [
+        "Собирать ягоды во время зари как СОРОКА.",
+        "Спорить с другими сороками за кусок хлеба как СОРОКА.",
+        "Летать над полями в поисках добычи как СОРОКА."
+      ],
+      "category_id": 2,
+      "animal_id": 7
+    },
+    "УШАСТАЯ СОВА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/ushastaya_sova",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/36102208-b069-403e-8d84-31b2631010c9.jpeg",
+      "answers": [
+        "Летать незаметно как УШАСТАЯ СОВА.",
+        "Сидеть ночью на ветке и слушать звуки леса как УШАСТАЯ СОВА.",
+        "Охотиться на мышей в темноте как УШАСТАЯ СОВА."
+      ],
+      "category_id": 2,
+      "animal_id": 8
+    },
+    "ЧЕРНОГРЕБЕНЧАТЫЙ ГОЛУБЬ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/chernogrebenchatyy_golub",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/6b593a99-16cd-4790-95a9-f71313bb8134.jpeg",
+      "answers": [
+        "Парить в небе в поисках пищи как ЧЕРНОГРЕБЕНЧАТЫЙ ГОЛУБЬ.",
+        "Строить гнездо на высоком дереве как ЧЕРНОГРЕБЕНЧАТЫЙ ГОЛУБЬ.",
+        "Клювать зерно на полях как ЧЕРНОГРЕБЕНЧАТЫЙ ГОЛУБЬ."
+      ],
+      "category_id": 2,
+      "animal_id": 9
+    },
+    "ЯПОНСКИЙ ЖУРАВЛЬ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/yaponskiy_zhuravl",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/412d11f9-cb9b-4d7c-9b4a-feb4d507bef2.jpeg",
+      "answers": [
+        "Парить над озерами как ЯПОНСКИЙ ЖУРАВЛЬ.",
+        "Танцевать в паре на рассвете как ЯПОНСКИЙ ЖУРАВЛЬ.",
+        "Защищать свою территорию от других журавлей как ЯПОНСКИЙ ЖУРАВЛЬ."
+      ],
+      "category_id": 2,
+      "animal_id": 10
+    }
   },
-  "fishes": {
-    "questions": "{name}, что тебе больше нравится в рыбах?",
-    "options": [
-      "Нырнуть в воду, как дельфин.",
-      "Плавать по течению, как лосось.",
-      "Пытаться поймать рыбу, как медведь."
-    ]
+  "Рептилии": {
+    "КИТАЙСКИЙ АЛЛИГАТОР": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/kitayskiy_alligator",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/bf1c7c71-b3d1-4f7b-968c-b0ff4f382382.jpeg",
+      "answers": [
+        "Лежать на солнце у воды как КИТАЙСКИЙ АЛЛИГАТОР.",
+		"Плавать по реке в поисках добычи как КИТАЙСКИЙ АЛЛИГАТОР.",
+		"Охранять свое болото от интрузов как КИТАЙСКИЙ АЛЛИГАТОР.,"
+
+      ],
+      "category_id": 3,
+      "animal_id": 1
+    },
+    "ЛУЧИСТАЯ ЧЕРЕПАХА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/luchistaya_cherepaha",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/3e657b0d-1e2f-4d8f-8422-b520d90e80ad.jpeg",
+      "answers": [
+        "Загребать песок для гнезда как ЛУЧИСТАЯ ЧЕРЕПАХА.",
+		"Плавать в море на длительные расстояния как ЛУЧИСТАЯ ЧЕРЕПАХА.",
+		"Вернуться на родину для кладки яиц как ЛУЧИСТАЯ ЧЕРЕПАХА."
+      ],
+      "category_id": 3,
+      "animal_id": 2
+    },
+    "НИЛЬСКИЙ КРОКОДИЛ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/nilskiy_krokodil",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/d1ddc02a-7172-480d-9139-faadd70fad72.jpeg",
+      "answers": [
+        "Греться на солнце на берегу Нила как НИЛЬСКИЙ КРОКОДИЛ.",
+        "Плавать по реке в поисках добычи как НИЛЬСКИЙ КРОКОДИЛ.",
+        "Нападать на антилопу на водопое как НИЛЬСКИЙ КРОКОДИЛ."
+      ],
+      "category_id": 3,
+      "animal_id": 3
+    },
+    "ОБЫКНОВЕННЫЙ УДАВ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/obyknovennyy_udav",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/b51da33d-be96-4c8e-bc89-d0456aa1b74c.jpeg",
+      "answers": [
+        "Лазить по веткам деревьев как ОБЫКНОВЕННЫЙ УДАВ.",
+        "Сжимать добычу в своих объятиях как ОБЫКНОВЕННЫЙ УДАВ.",
+        "Заворачивать себя в клубок для отдыха как ОБЫКНОВЕННЫЙ УДАВ."
+      ],
+      "category_id": 3,
+      "animal_id": 4
+    },
+    "СЛОНОВАЯ ЧЕРЕПАХА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/slonovaya_cherepaha",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/c4da2bbb-4233-4b85-a54a-ba13db9c19d4.jpeg",
+      "answers": [
+        "Плавать в море среди кораллов как СЛОНОВАЯ ЧЕРЕПАХА.",
+        "Откладывать яйца на пляже как СЛОНОВАЯ ЧЕРЕПАХА.",
+        "Копаться в песке в поисках пищи как СЛОНОВАЯ ЧЕРЕПАХА."
+      ],
+      "category_id": 3,
+      "animal_id": 5
+    },
+    "ТЕМНЫЙ ТИГРОВЫЙ ПИТОН": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/temnyy_tigrovyy_piton",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/9ffa798f-2d10-42d9-b7f3-06262004e919.jpeg",
+      "answers": [
+        "Заворачиваться вокруг своей добычи как ТЕМНЫЙ ТИГРОВЫЙ ПИТОН.",
+        "азить по веткам в поисках добычи как ТЕМНЫЙ ТИГРОВЫЙ ПИТОН.",
+        "Встречать рассвет в своей укрытой пещере как ТЕМНЫЙ ТИГРОВЫЙ ПИТОН."
+      ],
+      "category_id": 3,
+      "animal_id": 6
+    },
+    "ЧЕРНЫЙ КАЙМАН": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/chernyy_kayman",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/02fe9200-8f4e-44c4-b427-6190ca657c39.jpeg",
+      "answers": [
+        "Плавать в темных водах Амазонки как ЧЕРНЫЙ КАЙМАН.",
+        "Охотиться на рыбу в зарослях растительности как ЧЕРНЫЙ КАЙМАН.",
+        "Загребать грязь на берегу реки для сна как ЧЕРНЫЙ КАЙМАН."
+      ],
+      "category_id": 3,
+      "animal_id": 7
+    },
+    "СИАМСКИЙ КРОКОДИЛ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/siamskiy_krokodil",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/87e4ec11-8d44-4e54-8e23-f572ffdc32ca.png",
+      "answers": [
+        "Плавать в пресных водах реки как СИАМСКИЙ КРОКОДИЛ.",
+        "Солнечаться на берегу реки как СИАМСКИЙ КРОКОДИЛ.",
+        "Скрыться в зарослях тропического леса как СИАМСКИЙ КРОКОДИЛ."
+      ],
+      "category_id": 3,
+      "animal_id": 8
+    },
+    "ГЛАДКОЛОБЫЙ КАЙМАН": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/gladkolobyy_kayman",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/0a8990f0-ff38-4dcd-9095-3694bd3ff129.jpeg",
+      "answers": [
+        "Плавать по медленным рекам Амазонии как ГЛАДКОЛОБЫЙ КАЙМАН.",
+        "Загребать песок на берегу для строительства гнезда как ГЛАДКОЛОБЫЙ КАЙМАН.",
+        "Охотиться на рыбу в зарослях водорослей как ГЛАДКОЛОБЫЙ КАЙМАН."
+      ],
+      "category_id": 3,
+      "animal_id": 9
+    },
+    "ПАРАГВАЙСКАЯ АНАКОНДА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/paragvayskaya_anakonda",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/04e7d76a-1892-4406-9532-a8402d115f33.jpeg",
+      "answers": [
+        "Плавать в воде реки как ПАРАГВАЙСКАЯ АНАКОНДА.",
+        "Укрыться в густом лесу для охоты как ПАРАГВАЙСКАЯ АНАКОНДА.",
+        "Свернуться в клубок для отдыха после обеда как ПАРАГВАЙСКАЯ АНАКОНДА."
+      ],
+      "category_id": 3,
+      "animal_id": 10
+    }
   },
-  "amphibians": {
-    "questions": "{name}, какая амфибия тебе нравится больше всего?",
-    "options": [
-      "Прыгать, как лягушка.",
-      "Ползать, как саламандра.",
-      "Залечь в тени, как жаба."
-    ]
-  },
-  "snakes": {
-    "questions": "{name}, что тебе больше нравится в змеях?",
-    "options": [
-      "Извиваться, как удав.",
-      "Быть незаметным, как гадюка.",
-      "Линять, как питон."
-    ]
+  "Амфибии": {
+    "ВЕСЛОНОГ ДЕННИСИ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/veslonog_dennisi",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/06c3a0e5-b4ce-4d8f-965b-f3508c48da7b.jpeg",
+      "answers": [
+        "Плавать в теплых тропических водах как ВЕСЛОНОГ ДЕННИСИ.",
+        "Прыгать из воды в поисках пищи как ВЕСЛОНОГ ДЕННИСИ.",
+        "Спрятаться в коралловых рифах для защиты как ВЕСЛОНОГ ДЕННИСИ."
+      ],
+      "category_id": 4,
+      "animal_id": 1
+    },
+    "ГОЛУБОЙ ДРЕВОЛАЗ": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/goluboy_drevolaz",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/af76a71e-f7b9-4e6e-bb86-962f6c15a389.jpeg",
+      "answers": [
+        "Висеть на ветках в лесу как ГОЛУБОЙ ДРЕВОЛАЗ.",
+        "Прыгать с дерева на дерево в поисках еды как ГОЛУБОЙ ДРЕВОЛАЗ.",
+        "Петь в хоровом оркестре среди листьев как ГОЛУБОЙ ДРЕВОЛАЗ."
+      ],
+      "category_id": 4,
+      "animal_id": 2
+    },
+    "ДАЛЬНЕВОСТОЧНАЯ КВАКША": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/dalnevostochnaya_kvaksha",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/a288bb59-03f7-420c-9dd0-a11a105b23fc.jpeg",
+      "answers": [
+        "Квакать на воде в тихом заливе как ДАЛЬНЕВОСТОЧНАЯ КВАКША.",
+        "Строить гнездо на каменистом берегу как ДАЛЬНЕВОСТОЧНАЯ КВАКША.",
+        "Плавать в океане в поисках пищи как ДАЛЬНЕВОСТОЧНАЯ КВАКША."
+      ],
+      "category_id": 4,
+      "animal_id": 3
+    },
+    "ЖАБА-АГА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/zhaba_aga",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/9f4d94d2-5388-45e6-af16-129b2149c1ef.jpeg",
+      "answers": [
+        "Прыгать по листьям в тропическом лесу как ЖАБА-АГА.",
+        "Петь в хоровом квартете на болоте как ЖАБА-АГА.",
+        "Спрятаться под лилиями в пруду как ЖАБА-АГА."
+      ],
+      "category_id": 4,
+      "animal_id": 4
+    },
+    "ЗЕЛЕНАЯ ЖАБА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/zelenaya_zhaba",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/c896bf82-d198-4a6a-803d-77ffb80eea03.jpeg",
+      "answers": [
+        "Крякать в лесу в тихий вечер как ЗЕЛЕНАЯ ЖАБА.",
+        "Жевать мелких насекомых в высокой траве как ЗЕЛЕНАЯ ЖАБА.",
+        "Прыгать в воду с водопада как ЗЕЛЕНАЯ ЖАБА."
+      ],
+      "category_id": 4,
+      "animal_id": 5
+    },
+    "КРАСНОГЛАЗАЯ КВАКША": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/krasnoglazaya_kvaksha",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/8fd01175-95e9-4438-9470-8f767bea1701.jpeg",
+      "answers": [
+        "Квакать на рассвете в урочище как КРАСНОГЛАЗАЯ КВАКША.",
+        "Строить гнездо на ветке над водой как КРАСНОГЛАЗАЯ КВАКША.",
+        "ИПлавать в прозрачных водах озера как КРАСНОГЛАЗАЯ КВАКША."
+      ],
+      "category_id": 4,
+      "animal_id": 6
+    },
+    "ОГНЕННАЯ САЛАМАНДРА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/ognennaya_salamandra",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/854385eb-8633-40a5-b0c0-b9adee8330c1.jpeg",
+      "answers": [
+        "Ползти по скалам в горах как ОГНЕННАЯ САЛАМАНДРА.",
+        "Прыгать с камня на камень в поисках добычи как ОГНЕННАЯ САЛАМАНДРА.",
+        "Спрятаться в пещере от грозы как ОГНЕННАЯ САЛАМАНДРА."
+      ],
+      "category_id": 4,
+      "animal_id": 7
+    },
+    "СВЕРЧКОВАЯ ЖАБА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/sverchkovaya_zhaba",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/c8b1cdde-87ea-402d-9101-95d001496d51.jpeg",
+      "answers": [
+        "Петь на рассвете в поле как СВЕРЧКОВАЯ ЖАБА.",
+        "Скакать по лугу в поисках травы как СВЕРЧКОВАЯ ЖАБА.",
+        "Прыгать в пруд с высокой лилией как СВЕРЧКОВАЯ ЖАБА."
+      ],
+      "category_id": 4,
+      "animal_id": 8
+    },
+    "ТРЁХПАЛАЯ АМФИУМА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/trehpalaya_amfiuma",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/b68cfdaa-8f15-40c8-ac9f-6c55aa8ca2cb.jpeg",
+      "answers": [
+        "Плавать в тихих озерах как ТРЁХПАЛАЯ АМФИУМА.",
+        "ИПрыгать на сушу в поисках лягушек как ТРЁХПАЛАЯ АМФИУМА.",
+        "Спрятаться под камнем на дне реки как ТРЁХПАЛАЯ АМФИУМА."
+      ],
+      "category_id": 4,
+      "animal_id": 9
+    },
+    "МОНГОЛЬСКАЯ ЖАБА": {
+      "page_url": "https://moscowzoo.ru/animals/kinds/mongolskaya_zhaba",
+      "image_url": "https://storage.moscowzoo.ru/storage/647edc2a70bb5462366280fc/images/animals/22746760-eb37-465b-8723-b72b03b79988.jpeg",
+      "answers": [
+        "Квакать на рассвете в степи как МОНГОЛЬСКАЯ ЖАБА.",
+        "Прыгать в высокую траву как МОНГОЛЬСКАЯ ЖАБА.",
+        "Спрятаться в пустынной буреломке как МОНГОЛЬСКАЯ ЖАБА."
+      ],
+      "category_id": 4,
+      "animal_id": 10
+    }
   }
+
 }
