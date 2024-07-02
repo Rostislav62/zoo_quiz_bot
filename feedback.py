@@ -1,181 +1,81 @@
-# # - Механизм обратной связи в файле feedback.py
-#
-#
-# from aiogram import types, Dispatcher
-#
-# async def collect_feedback(message: types.Message):
-#     await message.answer("Пожалуйста, оставьте свой отзыв о викторине!")
-#
-# def register_feedback_handlers(dp: Dispatcher):
-#     dp.register_message_handler(collect_feedback, commands="feedback")
-
-import logging
-import random
-import string
-import json
-from aiogram import Bot, Dispatcher, types
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup
-from aiogram.utils import executor
-
-# Установка логгера для отладочных сообщений
-logging.basicConfig(level=logging.INFO)
-
-# Загрузка токена API
-from images import API_TOKEN
-
-# Инициализация бота и диспетчера
-bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
-
-# Глобальные переменные для хранения состояния
-user_name = None
-quiz_started = False
-question_numbers = []  # Список для хранения номеров вопросов
-questions = None
-answers = None
-txt_file = None
+# feedback.py  779559038
 
 
-# Загрузка вопросов из файла JSON и инициализация списка номеров вопросов
-def load_questions():
-    global questions, question_numbers
-    with open('questions.json', 'r', encoding='utf-8') as file:
-        questions = json.load(file)
-        question_numbers = list(questions.keys())  # Получаем список всех номеров вопросов
 
+import logging  # Импортируем logging
+import os  # Импортируем os для проверки существования файла
+from aiogram import types
+from aiogram.dispatcher import FSMContext, Dispatcher
+from aiogram.dispatcher.filters.state import State, StatesGroup
 
-# Функция для получения случайного вопроса
-def get_random_question():
-    global question_numbers
-    if question_numbers:
-        question_id = random.choice(question_numbers)
-        question_text = questions[question_id]['question']
-        question_numbers.remove(question_id)  # Удаляем выбранный вопрос из списка
-        return question_id, question_text
-    else:
-        return None, None
+class ContactForm(StatesGroup):
+    fullname = State()
+    phone = State()
+    email = State()
+    telegram = State()
 
+class FeedbackHandler:
+    @staticmethod
+    async def start_contact_form(callback_query: types.CallbackQuery):
+        callback_data = callback_query.data.split(':')
+        if len(callback_data) == 2:
+            txt_file = callback_data[1]
+        else:
+            txt_file = 'default_file.txt'
 
-# Обработка команды /start
-@dp.message_handler(commands=['start'])
-async def start(message: types.Message):
-    global quiz_started, answers, txt_file
-    quiz_started = False
-    answers = []
-    load_questions()  # Загружаем вопросы при старте
+        await ContactForm.fullname.set()
+        state = Dispatcher.get_current().current_state()
+        await state.update_data(txt_file=txt_file)
+        await callback_query.message.answer("Пожалуйста, введите ваше ФИО:")
+        await callback_query.answer()
 
-    # Отправка приветственного сообщения
-    await bot.send_message(message.chat.id, "Привет! \nЯ бот-викторина Московского зоопарка.\n\nНапишите Ваше имя?")
+    @staticmethod
+    async def process_fullname(message: types.Message, state: FSMContext):
+        await state.update_data(fullname=message.text)
+        await ContactForm.next()
+        await message.answer("Пожалуйста, введите ваш контактный телефон:")
 
+    @staticmethod
+    async def process_phone(message: types.Message, state: FSMContext):
+        await state.update_data(phone=message.text)
+        await ContactForm.next()
+        await message.answer("Пожалуйста, введите ваш e-mail:")
 
-# Обработка введенного имени
-@dp.message_handler(lambda message: message.text and not message.text.startswith('/') and not quiz_started)
-async def process_name(message: types.Message):
-    global user_name, txt_file
-    user_name = message.text
+    @staticmethod
+    async def process_email(message: types.Message, state: FSMContext):
+        await state.update_data(email=message.text)
+        await ContactForm.next()
+        await message.answer("Пожалуйста, введите ваш Telegram:")
 
-    # Создание имени файла с именем пользователя и 6 случайными числами
-    random_numbers = ''.join(random.choices(string.digits, k=6))
-    txt_file = f"{user_name.replace(' ', '_')}_{random_numbers}.txt"
+    @staticmethod
+    async def process_telegram(message: types.Message, state: FSMContext):
+        await state.update_data(telegram=message.text)
+        data = await state.get_data()
+        txt_file = data.get('txt_file', 'default_file.txt')
 
-    # Запись в файл информации
-    with open(txt_file, 'w', encoding='utf-8') as file:
-        file.write(f"{user_name}\n\n")
+        # Проверьте существование файла
+        if not os.path.exists(txt_file):
+            await message.answer("Произошла ошибка: файл не найден.")
+            return
+        recipient_id = '779559038'
+        logging.info(f"Sending telegram with results to chat ID {recipient_id}")
+        await FeedbackHandler.send_telegram_with_results(data, txt_file, message.bot)
+        await message.answer("Спасибо! Ваши данные были отправлены сотруднику.")
+        await state.finish()
 
-    # Отправка сообщения о создании файла и начале викторины
-    await bot.send_message(message.chat.id, f"Я создал файл\n{txt_file}\n\nПриятно познакомиться, {user_name}!\n"
-                                            f"Викторина поможет вам узнать какое у вас тотемное животное.\n"
-                                            f"Нажмите на кнопку ниже, чтобы начать викторину.",
-                           reply_markup=get_quiz_start_keyboard())
+    @staticmethod
+    async def send_telegram_with_results(data, txt_file, bot):
+        recipient_id = '779559038'  # ID чата, куда вы хотите отправить данные
 
+        body = (f"ФИО: {data['fullname']}\n"
+                f"Телефон: {data['phone']}\n"
+                f"Email: {data['email']}\n"
+                f"Telegram: {data['telegram']}\n")
 
-# Функция для создания клавиатуры с кнопкой "Начало викторины"
-def get_quiz_start_keyboard():
-    keyboard = InlineKeyboardMarkup()
-    keyboard.add(InlineKeyboardButton("Начало викторины", callback_data='quiz_start'))
-    return keyboard
+        logging.info(f"Sending message to {recipient_id} with body: {body}")
 
+        await bot.send_message(recipient_id, body)
 
-# Обработка нажатия на кнопку "Начало викторины"
-@dp.callback_query_handler(lambda c: c.data == 'quiz_start')
-async def process_quiz_start(callback_query: types.CallbackQuery):
-    global quiz_started, question_numbers
-    quiz_started = True
-    question_numbers = list(questions.keys())  # Восстанавливаем полный список вопросов
-    await callback_query.answer()
-    # Удаление кнопки "Начало викторины" после нажатия
-    await bot.edit_message_reply_markup(callback_query.from_user.id, callback_query.message.message_id,
-                                        reply_markup=None)
-    # Отправка первого вопроса
-    await send_question(callback_query.from_user.id)
-
-
-# Функции которые будут загружать данные и выбирать случайные ответы из каждой категории
-def load_animal_data():
-    with open('quiz_text.json', 'r', encoding='utf-8') as file:
-        return json.load(file)
-
-
-def get_random_animal_answers(animal_data):
-    categories = ['Млекопитающие', 'Птицы', 'Рептилии', 'Амфибии']
-    questions_and_answers = []
-    for category in categories:
-        animals = list(animal_data[category].items())
-        animal_name, animal_info = random.choice(animals)
-        answer = random.choice(animal_info['answers'])
-        category_id = animal_info['category_id']
-        animal_id = animal_info['animal_id']
-        questions_and_answers.append((animal_name, answer, category_id, animal_id))
-    return questions_and_answers
-
-
-# Функция для отправки вопроса
-async def send_question(user_id):
-    global questions
-    question_id, question_text = get_random_question()
-    if question_id and question_text:
-        question_text_with_answers = format_question_with_answers(question_text)
-        await bot.send_message(user_id, f"{question_text_with_answers}",
-                               reply_markup=get_quiz_keyboard())
-    else:
-        await bot.send_message(user_id, "Конец викторины.", reply_markup=types.ReplyKeyboardRemove())
-
-
-# Функция для форматирования вопроса с вариантами ответов на новых строках
-def format_question_with_answers(question_text):
-    global answers
-    answers = ["1 ответ", "2 ответ", "3 ответ", "4 ответ"]
-    random.shuffle(answers)
-    formatted_text = f"{question_text}\n"
-    for i, answer in enumerate(answers, start=1):
-        formatted_text += f"{i}. {answer}\n"
-    return formatted_text.strip()
-
-
-# Функция для создания обычной клавиатуры с вариантами ответов (в одном ряду)
-def get_quiz_keyboard():
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=4)
-    buttons = ["1", "2", "3", "4"]
-    keyboard.add(*buttons)
-    return keyboard
-
-
-# Обработка нажатий на кнопки с вариантами ответов
-@dp.message_handler(lambda message: quiz_started and message.text in ["1", "2", "3", "4"])
-async def process_quiz_answer(message: types.Message):
-    global answers, txt_file
-    selected_answer = answers[int(message.text) - 1]
-
-    question_id, question_text = get_random_question()
-    if question_id and question_text:
-        with open(txt_file, 'a', encoding='utf-8') as file:
-            file.write(f"{question_id}. {question_text}\n")
-            file.write(f"Вы выбрали ответ [{selected_answer}]\n\n")
-
-    await message.answer(f"Вы выбрали ответ [{selected_answer}]")
-    await send_question(message.from_user.id)
-
-
-# Запуск бота
-if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+        logging.info(f"Sending document {txt_file} to {recipient_id}")
+        with open(txt_file, 'rb') as f:
+            await bot.send_document(recipient_id, f)

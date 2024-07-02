@@ -10,13 +10,15 @@ from aiogram import Bot, Dispatcher
 from aiogram.utils import executor
 from config import API_TOKEN
 from handlers import register_handlers
+from aiogram.contrib.fsm_storage.memory import MemoryStorage  # Добавлено
 
 # Установка логгера для отладочных сообщений
 logging.basicConfig(level=logging.INFO)
 
 # Инициализация бота и диспетчера
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+storage = MemoryStorage()  # Создание экземпляра MemoryStorage
+dp = Dispatcher(bot, storage=storage)  # Передача storage в Dispatcher
 
 # Регистрация обработчиков
 register_handlers(dp, bot)
