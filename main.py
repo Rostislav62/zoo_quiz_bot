@@ -7,6 +7,7 @@
 
 import logging
 from aiogram import Bot, Dispatcher
+from aiogram.contrib.fsm_storage.memory import MemoryStorage  # Добавляем MemoryStorage
 from aiogram.utils import executor
 from config import API_TOKEN
 from handlers import register_handlers
@@ -16,7 +17,8 @@ logging.basicConfig(level=logging.INFO)
 
 # Инициализация бота и диспетчера
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+storage = MemoryStorage()  # Создаём хранилище
+dp = Dispatcher(bot, storage=storage)  # Передаём хранилище в Dispatcher
 
 # Регистрация обработчиков
 register_handlers(dp, bot)

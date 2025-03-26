@@ -15,3 +15,4 @@
 # For a description of the Bot API, see this page: https://core.telegram.org/bots/api
 
 API_TOKEN = '7735415258:AAFz18cHUdS1UiVhgPiHi0WC_yKKsl95GFg'
+ADMIN_ID = 5841448578

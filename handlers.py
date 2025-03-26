@@ -1,255 +1,242 @@
 # handlers.py
-# Обработчики команд и сообщений.
-
 import random
+import sqlite3
 import string
-import logging  # Добавлено для отладки (Grok)
+import logging
 from aiogram import types, Dispatcher
-from aiogram.utils.markdown import hlink  # Добавлено для форматирования ссылок в Markdown
-from utils import load_questions, get_random_question, format_question_with_answers, save_answer_to_file, \
-    write_totem_animal_to_file, reset_quiz_state, TOTEM_ANIMAL_MESSAGE_TEMPLATE, START_MESSAGE_TEMPLATE, START_PROMPT
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.utils.markdown import hlink
+import requests  # Уже добавлен для проверки URL
+from datetime import datetime  # Добавляем импорт
+from utils import load_questions, get_random_question, format_question_with_answers, save_answer_to_db, \
+    write_totem_animal_to_db, reset_quiz_state, save_user, TOTEM_ANIMAL_MESSAGE_TEMPLATE, START_MESSAGE_TEMPLATE, START_PROMPT
 from keyboards import get_quiz_start_keyboard, get_quiz_keyboard
 
-# Настройка логирования для отладки (Grok)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Глобальные переменные для хранения состояния викторины и информации о пользователе
-user_name = None  # Имя пользователя
-quiz_started = False  # Флаг начала викторины
-questions = None  # Список вопросов для викторины
-answers = None  # Список ответов для текущего вопроса
-txt_file = None  # Имя файла для записи ответов
-current_question_id = None  # Идентификатор текущего вопроса
-current_question_text = None  # Текст текущего вопроса
-current_answer_details = None  # Детали ответов для текущего вопроса
-totem_animal_scores = {}  # Словарь для подсчёта баллов животных (Grok)
-animal_details_map = {}  # Словарь для хранения деталей всех животных (Grok)
-totem_animal_details = None  # Детали тотемного животного
-question_count = 0  # Счетчик вопросов
+# Состояния для FSM
+class QuizStates(StatesGroup):
+    waiting_for_name = State()
+    waiting_for_language = State()
+    waiting_for_quiz_start = State()
+    waiting_for_answer = State()
+    waiting_for_feedback = State()
 
+# Глобальные переменные
+user_name = None
+quiz_started = False
+questions = None
+answers = None
+txt_file = None
+current_question_id = None
+current_question_text = None
+current_answer_details = None
+totem_animal_scores = {}
+animal_details_map = {}
+totem_animal_details = None
+question_count = 0
+user_id = None
+user_language = 'ru'
+from config import ADMIN_ID  # Импорт ADMIN_ID из config.py
 
-async def start(message: types.Message):
-    """
-    Инициализация викторины при запуске, загрузка вопросов, отправка логотипа и приветственного сообщения.
-    """
-    global quiz_started, answers, txt_file, questions, question_count, totem_animal_scores, animal_details_map
-    quiz_started = False  # Сброс флага начала викторины
-    answers = []  # Очистка списка ответов
-    questions = load_questions()  # Загрузка вопросов
-    question_count = 0  # Сброс счетчика вопросов
-    totem_animal_scores = {}  # Сброс баллов животных (Grok)
-    animal_details_map = {}  # Сброс деталей животных (Grok)
+async def start(message: types.Message, state: FSMContext):
+    global quiz_started, user_language
+    quiz_started = False
+    user_language = 'ru'
+    await QuizStates.waiting_for_language.set()
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("Русский", callback_data="lang_ru"))
+    markup.add(types.InlineKeyboardButton("English", callback_data="lang_en"))
+    await message.answer("Выберите язык / Choose language:", reply_markup=markup)
 
-    # Новое приветствие в стиле зоопарка (Grok)
-    welcome_message = (
-        "Р-р-р! Привет, любитель зверей! Я бот Московского зоопарка, и у меня есть миссия: "
-        "найти твоё тотемное животное! Готов узнать, кто ты — хитрый лис или, может, гордый павлин? "
-        "Напиши своё имя, и погнали в викторину!"
-    )
+async def set_language(callback_query: types.CallbackQuery, state: FSMContext):
+    global user_language
+    user_language = callback_query.data.split('_')[1]
+    await QuizStates.waiting_for_name.set()
+    await callback_query.bot.send_message(callback_query.from_user.id, START_PROMPT[user_language])
+    await callback_query.answer()
 
-    # Отправка логотипа, если он есть
-    try:
-        with open('logo.jpg', 'rb') as photo:
-            await message.bot.send_photo(message.chat.id, photo, caption=welcome_message)
-    except FileNotFoundError:
-        # Если логотипа нет, отправляем только текст (Grok)
-        await message.bot.send_message(message.chat.id, welcome_message)
-
-
-async def process_name(message: types.Message):
-    """
-    Обработка имени пользователя, создание файла для записи ответов и отправка сообщения с инструкциями.
-    """
-    global user_name, txt_file
-    user_name = message.text  # Сохранение имени пользователя
-
-    random_numbers = ''.join(random.choices(string.digits, k=6))  # Создание случайного числа из 6 цифр
-    txt_file = f"{user_name.replace(' ', '_')}_{random_numbers}.txt"  # Создание имени файла для записи ответов
-
-    # Создание и запись в файл информации о пользователе
-    with open(txt_file, 'w', encoding='utf-8') as file:
-        file.write(f"{user_name}\n\n")  # запись в файл информации о пользователе
-
-    # Новое сообщение с кнопкой в стиле зоопарка (Grok)
-    start_message = (
-        f"Привет, {user_name}! Я готов провести тебя по джунглям вопросов и найти твоего тотемного зверя. "
-        "Жми кнопку ниже, и начнём!"
-    )
+async def process_name(message: types.Message, state: FSMContext):
+    global user_name, user_id
+    user_name = message.text
+    user_id = save_user(user_name)
+    await QuizStates.waiting_for_quiz_start.set()
+    start_message = START_MESSAGE_TEMPLATE[user_language].format(user_name=user_name)
     await message.bot.send_message(
         message.chat.id, start_message,
-        reply_markup=get_quiz_start_keyboard("Начать викторину", "quiz_start")  # кнопка старта викторины
+        reply_markup=get_quiz_start_keyboard("Начать викторину" if user_language == 'ru' else "Start Quiz", "quiz_start")
     )
 
-
-async def process_quiz_start(callback_query: types.CallbackQuery):
-    """
-    Инициализация состояния викторины, сброс счетчика вопросов и тотемного животного, отправка первого вопроса.
-    """
+# handlers.py (фрагмент изменений)
+async def process_quiz_start(callback_query: types.CallbackQuery, state: FSMContext):
     global quiz_started, questions, question_count, totem_animal_details, totem_animal_scores, animal_details_map
     quiz_started = True
-    question_count = 0  # Сброс счетчика вопросов
-    totem_animal_details = None  # Сброс тотемного животного
-    totem_animal_scores = {}  # Сброс баллов животных (Grok)
-    animal_details_map = {}  # Сброс деталей животных (Grok)
+    question_count = 0
+    totem_animal_details = None
+    totem_animal_scores = {}
+    animal_details_map = {}
+    questions = load_questions(user_language)  # Загружаем вопросы на нужном языке
+    logger.info(f"Quiz started for user {user_name}, questions reloaded: {len(questions)}")
+    await QuizStates.waiting_for_answer.set()
+    await callback_query.bot.edit_message_reply_markup(callback_query.from_user.id, callback_query.message.message_id, reply_markup=None)
+    await send_question(callback_query.from_user.id, callback_query.bot, state)
 
-    # Перезагружаем вопросы при каждом старте (Grok)
-    questions = load_questions()  # Это обновит question_numbers в utils.py
-    logger.info(f"Quiz started for user {user_name}, questions reloaded: {len(questions)}")  # Отладка (Grok)
-
-    await callback_query.answer()  # Отправка подтверждения нажатия кнопки пользователю
-    await callback_query.bot.edit_message_reply_markup(callback_query.from_user.id, callback_query.message.message_id,
-                                                       reply_markup=None)  # Удаление кнопки "Начать викторину"
-    await send_question(callback_query.from_user.id, callback_query.bot)  # Отправка первого вопроса пользователю
-
-
-async def send_question(user_id, bot):
-    """
-    Отправка вопроса пользователю, если количество вопросов не превышает 20.
-    """
+async def send_question(user_id, bot, state: FSMContext):
     global answers, current_question_id, current_question_text, current_answer_details, question_count
-    if question_count >= 20:  # Объявление окончания викторины после 20 вопросов (Grok)
-        await bot.send_message(user_id, "Викторина окончена! Сейчас узнаем твоё тотемное животное...",
-                               reply_markup=types.ReplyKeyboardRemove())  # Удаление кнопок для ответов
-        await announce_totem_animal(user_id, bot)  # Объявление тотемного животного
+    if question_count >= 20:
+        await bot.send_message(user_id, "Викторина окончена! Сейчас узнаем твоё тотемное животное..." if user_language == 'ru' else "Quiz finished! Let's find out your totem animal...",
+                               reply_markup=types.ReplyKeyboardRemove())
+        await announce_totem_animal(user_id, bot, state)
         return
 
-    question_count += 1  # Увеличение счетчика вопросов
-    current_question_id, current_question_text = get_random_question()  # Получение случайного вопроса и его ID
-    if current_question_id and current_question_text:  # Проверка наличия ID и текста вопроса
-        question_text_with_answers, current_answer_details = format_question_with_answers(
-            current_question_text, question_count)  # Форматирование вопроса с номером (Grok)
-        answers = [detail['answer'] for detail in current_answer_details]  # Извлечение списка ответов из деталей
-
-        # Сохранение деталей всех животных в animal_details_map (Grok)
+    question_count += 1
+    current_question_id, current_question_text = get_random_question()
+    if current_question_id and current_question_text:
+        question_text_with_answers, current_answer_details = format_question_with_answers(current_question_text, question_count, user_language)  # Передаём язык
+        answers = [detail['answer'] for detail in current_answer_details]
         for detail in current_answer_details:
             animal_details_map[detail['animal_id']] = detail
-
-        await bot.send_message(user_id, f"{question_text_with_answers}",
-                               reply_markup=get_quiz_keyboard())  # Отправка вопроса и клавиатуры с вариантами ответов пользователю
-    else:
-        logger.error(f"No questions available for user {user_name}")  # Отладка (Grok)
-        await announce_totem_animal(user_id,
-                                    bot)  # Объявление тотемного животного, если вопросы закончились или не найдены
+        await bot.send_message(user_id, f"{question_text_with_answers}", reply_markup=get_quiz_keyboard())
 
 
-async def process_quiz_answer(message: types.Message):
-    """
-    Обработка ответа пользователя, сохранение ответа в файл, подсчёт баллов для тотемного животного (Grok).
-    """
-    global answers, txt_file, current_question_id, current_question_text, current_answer_details, totem_animal_details, question_count, totem_animal_scores
+async def process_quiz_answer(message: types.Message, state: FSMContext):
+    global answers, current_question_id, current_question_text, current_answer_details, totem_animal_details, question_count, totem_animal_scores
     try:
-        selected_index = int(
-            message.text) - 1  # Преобразование индекса текста сообщения в целое число и уменьшение на 1
-        selected_answer = answers[selected_index]  # Получение выбранного ответа из списка ответов по индексу
-        selected_detail = current_answer_details[
-            selected_index]  # Получение деталей выбранного ответа из текущих деталей ответов по индексу
-
-        # Подсчёт баллов для животного (Grok)
+        selected_index = int(message.text) - 1
+        selected_answer = answers[selected_index]
+        selected_detail = current_answer_details[selected_index]
         animal_id = selected_detail['animal_id']
         totem_animal_scores[animal_id] = totem_animal_scores.get(animal_id, 0) + 1
-        if question_count == 20:  # На последнем вопросе определяем тотемное животное (Grok)
+        save_answer_to_db(user_id, current_question_id, selected_answer, selected_detail)
+        if question_count == 20:
             max_animal_id = max(totem_animal_scores, key=totem_animal_scores.get)
-            totem_animal_details = animal_details_map[max_animal_id]  # Берём детали из сохранённого словаря (Grok)
-
-    except IndexError:  # Обработка исключения, если выбранный индекс выходит за пределы списка
-        await message.answer(
-            "Некорректный выбор. Пожалуйста, выберите один из предложенных вариантов.")  # Отправка сообщения пользователю о некорректном выборе
-        return  # Завершение выполнения функции в случае исключения
-
-    save_answer_to_file(txt_file, current_question_id, current_question_text, selected_answer,
-                        selected_detail)  # Сохранение ответа пользователя в файл
-
-    await message.answer(
-        f"Вы выбрали ответ [{selected_answer}]")  # Отправка сообщения пользователю с подтверждением выбранного ответа
-    await send_question(message.from_user.id, message.bot)  # Отправка следующего вопроса пользователю
+            totem_animal_details = animal_details_map[max_animal_id]
+            await state.set_state(QuizStates.waiting_for_feedback)
+        await message.answer(f"Вы выбрали ответ [{selected_answer}]" if user_language == 'ru' else f"You chose answer [{selected_answer}]")
+        await send_question(message.from_user.id, message.bot, state)  # Передаём state
+    except IndexError:
+        await message.answer("Некорректный выбор. Выберите 1-4." if user_language == 'ru' else "Invalid choice. Choose 1-4.")
 
 
-async def announce_totem_animal(user_id, bot):
-    """
-    Объявление тотемного животного, отправка сообщения и фото, запись информации о тотемном животном в файл, сброс состояния викторины.
-    """
-    global totem_animal_details, user_name, txt_file, quiz_started, questions, answers, current_question_id, \
-        current_question_text, current_answer_details, question_count
-
+async def announce_totem_animal(user_id, bot, state: FSMContext):
     try:
-        if totem_animal_details:  # Проверка, что информация о тотемном животном существует
-            animal_name = totem_animal_details['animal']  # Получение имени тотемного животного
-            image_url = totem_animal_details.get('image_url', '')  # Получение URL изображения (пустая строка, если нет)
-            page_url = totem_animal_details.get('page_url', '')  # Получение URL страницы (пустая строка, если нет)
-
-            # Улучшено: добавлено описание животного и фото (Grok)
+        if totem_animal_details:
+            animal_name = totem_animal_details['animal']
+            image_url = totem_animal_details.get('image_url', '')  # Получаем URL или пустую строку
+            page_url = totem_animal_details.get('page_url', '')
+            description = "Этот обитатель ждёт своего опекуна в Московском зоопарке." if user_language == 'ru' else "This inhabitant is waiting for its guardian at the Moscow Zoo."
             if animal_name.upper() == "КРАСНЫЙ ФЛАМИНГО":
-                description = "Эта грациозная птица обожает стоять на одной ноге и красоваться перед всеми!"
-            else:
-                description = "Этот обитатель ждёт своего опекуна в Московском зоопарке."
+                description = "Эта грациозная птица обожает стоять на одной ноге и красоваться перед всеми!" if user_language == 'ru' else "This graceful bird loves standing on one leg and showing off!"
+            message_text = TOTEM_ANIMAL_MESSAGE_TEMPLATE[user_language].format(user_name=user_name,
+                                                                               animal_name=animal_name,
+                                                                               page_url=page_url)
 
-            message_text = (
-                f"Ура, {user_name}! Твоё тотемное животное — **{animal_name}**! "
-                f"{description} Хочешь помочь? Стань опекуном: "
-                f"{hlink('подробности тут', 'https://moscowzoo.ru/about/guardianship')} "
-                f"или пиши на zoofriends@moscowzoo.ru, +79629713875!"
-            )
+            # Улучшенная проверка image_url
+            send_photo = False
+            if image_url:  # Проверяем, что строка не пустая
+                try:
+                    response = requests.head(image_url, timeout=10)  # Увеличиваем таймаут до 10 секунд
+                    if response.status_code == 200:
+                        send_photo = True
+                    else:
+                        logger.warning(
+                            f"Image URL unavailable for {animal_name}: {image_url}, status: {response.status_code}")
+                except requests.RequestException as e:
+                    logger.warning(f"Failed to check image URL for {animal_name}: {image_url}, error: {e}")
 
-            # Отправка фото и сообщения
-            if image_url:  # Проверка, что URL изображения не пустой
+            if send_photo:
                 await bot.send_photo(user_id, photo=image_url, caption=message_text, parse_mode='Markdown')
             else:
                 await bot.send_message(user_id, message_text, parse_mode='Markdown')
 
-            # Кнопки для взаимодействия (Grok)
             markup = types.InlineKeyboardMarkup()
-            markup.add(types.InlineKeyboardButton("Начать снова", callback_data="quiz_restart"))
-            markup.add(types.InlineKeyboardButton("Узнать об опеке", url="https://moscowzoo.ru/about/guardianship"))
-            markup.add(types.InlineKeyboardButton("Поделиться",
-                                                  switch_inline_query=f"Моё тотемное животное — {animal_name}! Попробуй и ты: @ZooQuizBot2025_bot"))
+            markup.add(types.InlineKeyboardButton("Начать снова" if user_language == 'ru' else "Start Again",
+                                                  callback_data="quiz_restart"))
+            markup.add(
+                types.InlineKeyboardButton("Узнать об опеке" if user_language == 'ru' else "Learn About Guardianship",
+                                           url="https://moscowzoo.ru/about/guardianship"))
+            markup.add(types.InlineKeyboardButton("Поделиться" if user_language == 'ru' else "Share",
+                                                  switch_inline_query=f"Моё тотемное животное — {animal_name}! Попробуй и ты: @ZooQuizBot2025_bot" if user_language == 'ru' else f"My totem animal is {animal_name}! Try it: @ZooQuizBot2025_bot"))
+            markup.add(types.InlineKeyboardButton("Оставить отзыв" if user_language == 'ru' else "Leave Feedback",
+                                                  callback_data="feedback"))
+            await bot.send_message(user_id,
+                                   "Конец викторины. Что дальше?" if user_language == 'ru' else "End of quiz. What's next?",
+                                   reply_markup=markup)
+            write_totem_animal_to_db(user_id, animal_name, page_url, image_url)
+    except Exception as e:
+        await bot.send_message(user_id,
+                               f"Произошла ошибка: {e}" if user_language == 'ru' else f"An error occurred: {e}")
 
-            await bot.send_message(user_id, "Конец викторины. Что дальше?", reply_markup=markup)
 
-            # Запись информации о тотемном животном в файл
-            write_totem_animal_to_file(txt_file, animal_name, page_url, image_url)
-
-    except Exception as e:  # Обработка исключений, если возникла ошибка
-        await bot.send_message(user_id, f"Произошла ошибка: {e}")  # Отправка сообщения об ошибке
-
-
-async def restart_quiz(callback_query: types.CallbackQuery):
-    """
-    Перезапуск викторины, запись в файл о начале новой викторины, эмуляция ввода имени (Grok).
-    """
+async def restart_quiz(callback_query: types.CallbackQuery, state: FSMContext):
     global txt_file, quiz_started
-    logger.info(f"Restart quiz triggered for user {user_name}")  # Отладка (Grok)
-
-    reset_quiz_state()  # Сброс всех глобальных переменных, кроме user_name и txt_file
-    quiz_started = False  # Убедимся, что флаг сброшен (Grok)
-
-    with open(txt_file, 'a', encoding='utf-8') as file:  # Открытие текстового файла в режиме добавления (append)
-        file.write("Новая викторина\n\n")  # Запись строки "Новая викторина" и двух переводов строки в файл
-
-    # Эмуляция ввода имени: отправляем сообщение как в process_name (Grok)
-    start_message = (
-        f"Привет, {user_name}! Я готов провести тебя по джунглям вопросов и найти твоего тотемного зверя. "
-        "Жми кнопку ниже, и начнём снова!"
-    )
+    logger.info(f"Restart quiz triggered for user {user_name}")
+    reset_quiz_state()
+    quiz_started = False
+    await QuizStates.waiting_for_quiz_start.set()
+    start_message = START_MESSAGE_TEMPLATE[user_language].format(user_name=user_name)
     await callback_query.bot.send_message(
         callback_query.from_user.id, start_message,
-        reply_markup=get_quiz_start_keyboard("Начать викторину", "quiz_start")
+        reply_markup=get_quiz_start_keyboard("Начать викторину" if user_language == 'ru' else "Start Quiz", "quiz_start")
     )
-    await callback_query.answer()  # Подтверждение нажатия кнопки
+    await callback_query.answer()
 
+async def start_feedback(callback_query: types.CallbackQuery, state: FSMContext):
+    await QuizStates.waiting_for_feedback.set()
+    await callback_query.bot.send_message(
+        callback_query.from_user.id,
+        "Напишите ваш отзыв о викторине:" if user_language == 'ru' else "Write your feedback about the quiz:"
+    )
+    await callback_query.answer()
+
+async def process_feedback(message: types.Message, state: FSMContext):
+    conn = sqlite3.connect('zoo_quiz.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO feedback (user_id, text, date) VALUES (?, ?, ?)',
+                   (user_id, message.text, datetime.now().isoformat()))
+    conn.commit()
+    conn.close()
+    await message.answer("Спасибо за ваш отзыв!" if user_language == 'ru' else "Thank you for your feedback!")
+    await state.finish()
+
+async def admin_stats(message: types.Message):
+    if message.from_user.id != ADMIN_ID:
+        await message.answer("Доступ запрещён." if user_language == 'ru' else "Access denied.")
+        return
+    conn = sqlite3.connect('zoo_quiz.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT a.name, s.count FROM statistics s JOIN animals a ON s.animal_id = a.id ORDER BY s.count DESC')
+    stats = cursor.fetchall()
+    conn.close()
+    stats_text = "Статистика выбора животных:\n" if user_language == 'ru' else "Animal selection statistics:\n"
+    for name, count in stats:
+        stats_text += f"{name}: {count}\n"
+    await message.answer(stats_text)
+
+async def admin_feedback(message: types.Message):
+    if message.from_user.id != ADMIN_ID:
+        await message.answer("Доступ запрещён." if user_language == 'ru' else "Access denied.")
+        return
+    conn = sqlite3.connect('zoo_quiz.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT u.name, f.text, f.date FROM feedback f JOIN users u ON f.user_id = u.id ORDER BY f.date DESC LIMIT 5')
+    feedback = cursor.fetchall()
+    conn.close()
+    feedback_text = "Последние отзывы:\n" if user_language == 'ru' else "Recent feedback:\n"
+    for name, text, date in feedback:
+        feedback_text += f"{name} ({date}): {text}\n"
+    await message.answer(feedback_text)
 
 def register_handlers(dp: Dispatcher, bot):
-    """
-    Регистрация всех обработчиков команд и сообщений.
-    """
-    dp.register_message_handler(start, commands=['start'])  # Регистрация обработчика для команды /start
-    dp.register_message_handler(process_name,
-                                lambda message: message.text and not message.text.startswith(
-                                    '/') and not quiz_started)  # Регистрация обработчика для ввода имени
-    dp.register_callback_query_handler(process_quiz_start, lambda
-        c: c.data == 'quiz_start')  # Регистрация обработчика для кнопки "Начать викторину"
-    dp.register_callback_query_handler(restart_quiz, lambda
-        c: c.data == 'quiz_restart')  # Регистрация обработчика для кнопки "Начать снова"
-    dp.register_message_handler(process_quiz_answer,
-                                lambda message: quiz_started and message.text in ["1", "2", "3",
-                                                                                  "4"])  # Регистрация обработчика для ответов на вопросы
+    dp.register_message_handler(start, commands=['start'], state='*')
+    dp.register_callback_query_handler(set_language, lambda c: c.data.startswith('lang_'), state=QuizStates.waiting_for_language)
+    dp.register_message_handler(process_name, lambda message: message.text and not message.text.startswith('/'), state=QuizStates.waiting_for_name)
+    dp.register_callback_query_handler(process_quiz_start, lambda c: c.data == 'quiz_start', state=QuizStates.waiting_for_quiz_start)
+    dp.register_message_handler(process_quiz_answer, lambda message: quiz_started and message.text in ["1", "2", "3", "4"], state=QuizStates.waiting_for_answer)
+    dp.register_callback_query_handler(restart_quiz, lambda c: c.data == 'quiz_restart', state='*')
+    dp.register_callback_query_handler(start_feedback, lambda c: c.data == 'feedback', state='*')
+    dp.register_message_handler(process_feedback, state=QuizStates.waiting_for_feedback)
+    dp.register_message_handler(admin_stats, commands=['stats'])
+    dp.register_message_handler(admin_feedback, commands=['feedback'])
