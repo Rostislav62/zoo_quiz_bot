@@ -41,21 +41,82 @@ user_id = None
 user_language = 'ru'
 from config import ADMIN_ID  # Импорт ADMIN_ID из config.py
 
+
 async def start(message: types.Message, state: FSMContext):
+    """
+    Инициализация викторины при запуске, отправка логотипа и приветственного сообщения, выбор языка.
+    """
     global quiz_started, user_language
     quiz_started = False
-    user_language = 'ru'
+    user_language = 'ru'  # По умолчанию русский, пока не выбран язык
+
+    # Приветствие на двух языках
+    welcome_message = {
+        'ru': (
+            "Р-р-р! Привет, любитель зверей! \n Я бот Московского зоопарка, и у меня есть миссия:\n "
+            "найти твоё тотемное животное! \n Готов узнать, кто ты — хитрый лис \nили, может, гордый павлин? \n\n"
+            "Сначала выбери язык!"
+        ),
+        'en': (
+            "Roar! Hello, animal lover!\n I’m the Moscow Zoo bot, and I’m on a mission: \n"
+            "to find your totem animal! \nReady to discover if you’re a cunning fox \nor a proud peacock?\n \n"
+            "First, choose your language!"
+        )
+    }
+
+    # Отправка логотипа с приветствием
+    try:
+        with open('logo.jpg', 'rb') as photo:
+            await message.bot.send_photo(
+                message.chat.id,
+                photo,
+                caption=welcome_message['ru'],  # Пока на русском, до выбора языка
+                reply_markup=None
+            )
+    except FileNotFoundError:
+        await message.bot.send_message(
+            message.chat.id,
+            welcome_message['ru']
+        )
+
+    # Кнопки выбора языка
     await QuizStates.waiting_for_language.set()
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("Русский", callback_data="lang_ru"))
     markup.add(types.InlineKeyboardButton("English", callback_data="lang_en"))
-    await message.answer("Выберите язык / Choose language:", reply_markup=markup)
+    await message.bot.send_message(
+        message.chat.id,
+        "Выберите язык / Choose language:",
+        reply_markup=markup
+    )
 
+
+# Обновим set_language для поддержки приветствия после выбора языка
 async def set_language(callback_query: types.CallbackQuery, state: FSMContext):
     global user_language
     user_language = callback_query.data.split('_')[1]
+
+    # Приветствие после выбора языка
+    welcome_message = {
+        'ru': (
+            "Р-р-р! Привет, любитель зверей!\n"
+            "Я бот Московского зоопарка, и у меня есть миссия:\n"
+            "найти твоё тотемное животное!\n"
+            "Напиши своё имя, и погнали в викторину!"
+        ),
+        'en': (
+            "Roar! Hello, animal lover!\n"
+            "I’m the Moscow Zoo bot, and I’m on a mission:\n"
+            "to find your totem animal!\n"
+            "Enter your name, and let’s start the quiz!"
+        )
+    }
+
     await QuizStates.waiting_for_name.set()
-    await callback_query.bot.send_message(callback_query.from_user.id, START_PROMPT[user_language])
+    await callback_query.bot.send_message(
+        callback_query.from_user.id,
+        welcome_message[user_language]
+    )
     await callback_query.answer()
 
 async def process_name(message: types.Message, state: FSMContext):
