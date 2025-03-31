@@ -1,50 +1,81 @@
+# Two-Step Quiz Bot (TSQ)
 
-## Установка
-1. Клонируйте репозиторий: `git clone https://github.com/Rostislav62/zoo_quiz_bot`
-2. Установите зависимости: `pip install -r requirements.txt`
-3. Настройте токен в `config.py`.
-4. Запустите `db_setup.py` и `db_migrate.py` для создания базы данных.
-5. Запустите бота: `python main.py`
+## Overview
 
+### Problem
+Moscow Zoo needs guardians for its animals but lacks interactive ways to engage potential supporters.
 
-# Zoo Quiz Bot
+### Solution
+A Telegram bot with a two-step quiz that identifies a user's totem animal from 40 zoo inhabitants, supports Russian and English, collects feedback and statistics, and promotes the guardianship program.
 
-## Проблема
-Московскому зоопарку нужны опекуны для животных, но не хватает интерактивных способов привлечь внимание пользователей.
+### Impact
+Increases interest in the guardianship program by entertaining and engaging users through an interactive experience.
 
-## Решение
-Telegram-бот с викториной из 20 вопросов, который определяет тотемное животное пользователя, 
-поддерживает русский и английский языки, собирает отзывы и статистику, и рассказывает о программе опеки.
+## About the Project
+TSQ is a Telegram bot developed for Moscow Zoo to determine a user's totem animal via a two-stage quiz:
+1. **Mini-Quiz** (5 questions): Identifies the category (Mammals, Birds, Reptiles, Amphibians).
+2. **Main Quiz** (20 questions): Selects a unique totem animal with 800 custom responses.
 
-## Результат
-Увеличение интереса к программе опеки через развлечение и вовлечение пользователей с помощью интерактивного бота.
+This project showcases my skills in building AI agents, from database management to Telegram API integration.
 
-## Функциональность
-- Викторина на 20 вопросов с полной локализацией (RU/EN).
-- SQLite база данных для хранения вопросов, ответов, отзывов и статистики.
-- Обратная связь от пользователей.
-- Админ-команды для просмотра статистики (`/stats`) и отзывов (`/feedback`).
+## Features
+- **Unique Responses**: 800 humorous and factual answers for 20 questions across 40 animals.
+- **Interactivity**: End-of-quiz buttons ("Restart", "Share", "Guardianship", "Feedback") and admin commands (`/stats`, `/feedback`).
+- **Database**: SQLite (`zoo_quiz.db`) stores questions, answers, and feedback.
+- **Localization**: Supports Russian and English languages.
 
-## Технологии
-- **Python**: Основной язык программирования.
-- **aiogram**: Фреймворк для Telegram-ботов.
-- **SQLite**: База данных для хранения данных.
-- **JSON**: Формат исходных данных для миграции.
+## How It Works
+1. User starts with `/start`, selects a language, and enters their name.
+2. Completes the mini-quiz to determine a category.
+3. Answers 20 questions in the main quiz.
+4. Receives their totem animal with a photo, link, and interactive buttons.
 
-## Установка
-1. Клонируйте ветку `DataBaseBot`:
+## Technologies
+- **Python 3.10**: Core language.
+- **aiogram 2.21**: Telegram Bot API framework.
+- **SQLite**: Data storage.
+- **JSON**: Format for initial data migration.
+- **Git**: Version control.
+
+## Installation
+1. Clone the `TSQ` branch:
    ```bash
-   git clone -b DataBaseBot https://github.com/Rostislav62/zoo_quiz_bot.git
+   git clone -b TSQ https://github.com/Rostislav62/zoo_quiz_bot.git
    cd zoo_quiz_bot
-2. Установите зависимости: `pip install -r requirements.txt`
-- Если `requirements.txt` нет, создай его:
-  ```bash
-  pip freeze > requirements.txt
-3. Настройте config.py с вашим API_TOKEN и ADMIN_ID.
-4. Запустите `db_setup.py` и `db_migrate.py` для создания базы данных.
-5. Запустите бота: `python main.py`
+2. Set up a virtual environment: 
+   ```bash
+   python3.10 -m venv .venv
+   source .venv/bin/activate
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+4. Configure the bot token in config.py:
+   BOT_TOKEN = "your_bot_token_here"
+5. Initialize the database:
+   ```bash
+   python3 db_setup.py
+   python3 db_migrate.py
+   python3 setup_mini_quiz_db.py
+   python3 update_animals_from_site.py
+   python3 update_categories.py
+   python3 update_questions.py
+   python3 add_main_quiz_answers.py
+6. Launch the bot:
+    ```bash
+   python3 main.py
 
-## Использование
-    Запустите бота с /start.
-    Выберите язык (RU/EN), введите имя, пройдите викторину.
-    Оставьте отзыв и используйте админ-команды (/stats, /feedback).
+## Usage
+    - Start the bot with /start.
+    - Choose a language (RU/EN), enter your name, and complete the quiz.
+    - Use buttons to restart, share results, learn about guardianship, or leave feedback.
+    - Admins can view stats (/stats) and feedback (/feedback).
+
+## Demo
+    Watch a short demo video:  (to be updated).
+
+## Author 
+    Rostislav — AI agent developer. 
+    This bot is part of my portfolio, demonstrating expertise in intelligent bot creation.
+
+## License
+    MIT License
