@@ -71,7 +71,7 @@ This project showcases my skills in building AI agents, from database management
     - Admins can view stats (/stats) and feedback (/feedback).
 
 ## Demo
-    Watch a short demo video:  (to be updated).
+    Watch a short demo video: [TSQ Demo](https://github.com/Rostislav62/zoo_quiz_bot/raw/TSQ/tsq_demo.webm)
 
 ## Author 
     Rostislav — AI agent developer. 
